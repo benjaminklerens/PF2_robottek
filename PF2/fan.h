@@ -20,11 +20,19 @@ float readTemp() {
 
 }
 
+void runFan() {
+  digitalWrite(MOTOR_PIN, 1);
+}
+
+void stopFan() {
+  digitalWrite(MOTOR_PIN, 0);
+}
+
 void handleFan() {
   Serial.println(readTemp());
   if (readTemp() > 20.00) {
-    digitalWrite(MOTOR_PIN, 1);
+    runFan();
   } else {
-    digitalWrite(MOTOR_PIN, 0);
+    stopFan();
   }
 }

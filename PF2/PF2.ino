@@ -7,6 +7,7 @@ void setup() {
 }
 
 void loop() {
-  handleFan();
+  runFan();
+  //handleFan();
   delay(250);
 }
