@@ -1,1 +1,2 @@
-# PF2_robottek
+# Hardware & robotteknologi
+## Portfolio opgave 2
