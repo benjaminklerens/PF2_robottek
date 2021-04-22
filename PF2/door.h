@@ -11,14 +11,14 @@ int speed = 1; // Degrees of each movement, i.e. speed of door
 int sensMvmt;
 int noiseThreshold = 100; // Threshold for recognizing PIR trigger
 
-void setup() {
-  Serial.begin(9600);
-  
+// setup
+void setupDoor() { 
   doorServo.attach(doorServoPin);
   doorServo.write(pos);
 }
 
-void loop() {
+// loop
+void handleDoor() {
   delay(100);
   readSensor();
   
