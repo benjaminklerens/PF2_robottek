@@ -15,6 +15,7 @@ int stateCLK, lastStateCLK;
 int alarmHour_addr = 0;
 int alarmMinute_addr = 1;
 int sens = 5;
+int alarmDuration = 5;
 int alarmHour, alarmMinute;
 
 boolean alarmActive = true;
@@ -26,6 +27,7 @@ DateTime now;
 // initialize the library with the numbers of the interface pins
 LiquidCrystal lcd(11, 10, 9, 8, 7, 6);
 
+// Print the current time to the LCD
 void printLCDTime() {
   lcd.setCursor(0, 1);
   if (now.hour() < 10) {
@@ -39,6 +41,7 @@ void printLCDTime() {
   lcd.print(now.minute(), DEC);
 }
 
+// Print the current alarm timer to the LCD
 void printLCDAlarm() {
   lcd.setCursor(0, 1);
   if (alarmHour < 10) {
@@ -60,6 +63,7 @@ void printLCD() {
   }
 }
 
+// Decrease alarm timer by the value of 'sens'
 void decreaseAlarm() {
   if (alarmMinute - sens < 0) {
     if (alarmHour > 0) {
@@ -71,6 +75,7 @@ void decreaseAlarm() {
   }
 }
 
+// Increase alarm timer by the value of 'sens'
 void increaseAlarm() {
   if  (alarmMinute + sens >= 60) {
     if (alarmHour < 23) {
@@ -84,10 +89,10 @@ void increaseAlarm() {
 
 void rotate() {
   if (!alarmActive) {
-    stateCLK = digitalRead(CLK); // Reads the "current" state of the outputA
-    // If the previous and the current state of the outputA are different, that means a Pulse has occured
+    stateCLK = digitalRead(CLK);
+    // If the previous and the current state of CLK are different, that means a Pulse has occured
     if (stateCLK != lastStateCLK && stateCLK == 1) {
-      // If the outputB state is different to the outputA state, that means the encoder is rotating clockwise
+      // If DT state is different to CLK state, that means the encoder is rotating clockwise
       if (digitalRead(DT) != stateCLK) {
         decreaseAlarm();
       } else {
@@ -95,7 +100,7 @@ void rotate() {
       }
       alarmChanged = true;
     }
-    lastStateCLK = stateCLK; // Updates the previous state of the outputA with the current state
+    lastStateCLK = stateCLK; // Updates the previous state of the CLK with the current state
   }
 }
 
@@ -107,6 +112,13 @@ void saveAlarm() {
     EEPROM.write(alarmMinute_addr, alarmMinute);
   }
   Serial.println("wrote alarm to eeprom!");
+}
+
+void runAlarm() {
+  delay(500);
+  digitalWrite(BUZZER_PIN, 1);
+  delay(500);
+  digitalWrite(BUZZER_PIN, 0);
 }
 
 void setupAlarm() {
@@ -130,31 +142,40 @@ void setupAlarm() {
   // EEPROM.write(alarmHour_addr, 8);
   // EEPROM.write(alarmMinute_addr, 0);
 
+  // Using the internal pullup resistors for the rotary encoder
   pinMode(SW, INPUT_PULLUP);
-  pinMode(CLK, INPUT);
-  pinMode(DT, INPUT);
+  pinMode(CLK, INPUT_PULLUP);
+  pinMode(DT, INPUT_PULLUP);
 
   pinMode(BUZZER_PIN, OUTPUT);
 
   // set up the LCD's number of columns and rows:
   lcd.begin(16, 2);
+
   lastStateCLK = digitalRead(CLK);
   lastButtonState = digitalRead(SW);
+
+  // Attaching interrupt to CLK pin of rotary encoder
+  // (This is needed to make sure each change is registered)
   attachInterrupt(digitalPinToInterrupt(CLK), rotate, CHANGE);
   lcd.print("Current time:");
 }
 
 void handleAlarm() {
+
+  // Fetch new time info from RTC
   now = rtc.now();
-  if (alarmActive == true && alarmHour == now.hour()) {
-    digitalWrite(BUZZER_PIN, 1);
-  }
-  else {
-    digitalWrite(BUZZER_PIN, 0);
+
+  // Check if alarm is active, run alarm if time is equal to the time of the alarm
+  if (alarmActive == true) {
+    if (alarmHour == now.hour() && alarmHour == now.minute() && now.second() <= alarmDuration) {
+      runAlarm();
+    }
   }
 
+  // Change mode when button is pressed
   buttonState = digitalRead(SW);
-  if (buttonState != lastButtonState && buttonState == 1) {
+  if (buttonState != lastButtonState && buttonState == 0) {
     alarmActive = !alarmActive;
     lcd.clear();
     if (alarmActive) {

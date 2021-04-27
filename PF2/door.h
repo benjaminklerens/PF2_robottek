@@ -2,7 +2,7 @@
 
 Servo doorServo;
 
-int doorServoPin = 3;
+int doorServoPin = 5;
 int PIRPin = A5;
 
 int pos = 180;
