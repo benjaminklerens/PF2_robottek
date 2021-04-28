@@ -188,5 +188,4 @@ void handleAlarm() {
   }
   printLCD();
   lastButtonState = buttonState;
-  delay(50);
 }
