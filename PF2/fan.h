@@ -1,4 +1,4 @@
-#define MOTOR_PIN 12
+#define MOTOR_PIN 13
 
 int ThermistorPin = 0;
 int Vo;
@@ -29,8 +29,8 @@ void stopFan() {
 }
 
 void handleFan() {
-  Serial.println(readTemp());
-  if (readTemp() > 20.00) {
+  //Serial.println(readTemp());
+  if (readTemp() > 30.00) {
     runFan();
   } else {
     stopFan();

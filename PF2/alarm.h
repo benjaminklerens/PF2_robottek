@@ -3,19 +3,18 @@
 #include <EEPROM.h>
 
 #define SW 2
-#define BUZZER_PIN 13
+#define BUZZER_PIN 12
 #define CLK 3
 #define DT 4
 
 RTC_DS1307 rtc;
 
-int buttonState, lastButtonState;
 int stateCLK, lastStateCLK;
 
 int alarmHour_addr = 0;
 int alarmMinute_addr = 1;
 int sens = 5;
-int alarmDuration = 5;
+int alarmDuration = 30;
 int alarmHour, alarmMinute;
 
 boolean alarmActive = true;
@@ -98,6 +97,7 @@ void rotate() {
       } else {
         increaseAlarm();
       }
+      printLCDAlarm();
       alarmChanged = true;
     }
     lastStateCLK = stateCLK; // Updates the previous state of the CLK with the current state
@@ -112,6 +112,20 @@ void saveAlarm() {
     EEPROM.write(alarmMinute_addr, alarmMinute);
   }
   Serial.println("wrote alarm to eeprom!");
+}
+
+void button() {
+  alarmActive = !alarmActive;
+  lcd.clear();
+  if (alarmActive) {
+    saveAlarm();
+    lcd.print("Current time:");
+    printLCDTime();
+  }
+  else {
+    lcd.print("Alarm time:");
+    printLCDAlarm();
+  }
 }
 
 void runAlarm() {
@@ -153,39 +167,26 @@ void setupAlarm() {
   lcd.begin(16, 2);
 
   lastStateCLK = digitalRead(CLK);
-  lastButtonState = digitalRead(SW);
 
   // Attaching interrupt to CLK pin of rotary encoder
   // (This is needed to make sure each change is registered)
+  attachInterrupt(digitalPinToInterrupt(SW), button, FALLING);
   attachInterrupt(digitalPinToInterrupt(CLK), rotate, CHANGE);
   lcd.print("Current time:");
 }
 
 void handleAlarm() {
+  //runAlarm();
 
   // Fetch new time info from RTC
   now = rtc.now();
+  Serial.println(now.second());
 
   // Check if alarm is active, run alarm if time is equal to the time of the alarm
   if (alarmActive == true) {
-    if (alarmHour == now.hour() && alarmHour == now.minute() && now.second() <= alarmDuration) {
+    printLCDTime();
+    if (alarmHour == now.hour() && alarmMinute == now.minute() && (now.second() < alarmDuration)) {
       runAlarm();
     }
   }
-
-  // Change mode when button is pressed
-  buttonState = digitalRead(SW);
-  if (buttonState != lastButtonState && buttonState == 0) {
-    alarmActive = !alarmActive;
-    lcd.clear();
-    if (alarmActive) {
-      saveAlarm();
-      lcd.print("Current time:");
-    }
-    else {
-      lcd.print("Alarm time:");
-    }
-  }
-  printLCD();
-  lastButtonState = buttonState;
 }

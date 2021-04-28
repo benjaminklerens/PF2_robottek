@@ -16,5 +16,5 @@ void loop() {
   handleFan();
   handleDoor();
   handleAlarm();
-  delay(250);
+  delay(50);
 }

@@ -3,7 +3,10 @@
 Servo doorServo;
 
 int doorServoPin = 5;
-int PIRPin = A5;
+int PIRPin = A3;
+
+boolean isOpen = false;
+unsigned long previousTime;
 
 int pos = 180;
 int speed = 1; // Degrees of each movement, i.e. speed of door
@@ -17,33 +20,30 @@ void readSensor() {
 }
 
 void openDoor() {
-  for (pos; pos >= 0; pos -= 1) {
-    doorServo.write(pos);
-    delay(15);
-  }
+  doorServo.write(0);
+  isOpen = true;
 }
 
 void closeDoor() {
-  for (pos; pos <= 180; pos += 1) {
-    doorServo.write(pos);
-    delay(15);
-  }
+  doorServo.write(180);
+  isOpen = false;
 }
 
 // setup
 void setupDoor() {
   doorServo.attach(doorServoPin);
-  doorServo.write(pos);
+  previousTime = millis();
+  closeDoor();
 }
 
 // loop
 void handleDoor() {
-  delay(100);
   readSensor();
 
-  if (sensMvmt >= noiseThreshold) {
+  if (sensMvmt >= noiseThreshold && isOpen == false) {
     openDoor();
-    delay(5000);
+    previousTime = millis();
+  } else if ((millis() - previousTime) >= 5000) {
     closeDoor();
   }
 }
