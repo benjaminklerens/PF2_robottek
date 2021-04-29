@@ -14,7 +14,6 @@ int noiseThreshold = 100; // Threshold for recognizing PIR trigger
 
 void readSensor() {
   sensMvmt = analogRead(PIRPin);
-  Serial.println(sensMvmt);
 }
 
 void openDoor() {

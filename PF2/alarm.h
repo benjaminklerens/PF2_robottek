@@ -179,7 +179,6 @@ void handleAlarm() {
 
   // Fetch new time info from RTC
   now = rtc.now();
-  Serial.println(now.second());
 
   // Check if alarm is active, run alarm if time is equal to the time of the alarm
   if (alarmActive == true) {

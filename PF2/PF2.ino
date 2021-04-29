@@ -2,15 +2,29 @@
 #include "door.h"
 #include "alarm.h"
 
+boolean lastFanRunning;
+boolean lastIsOpen;
+boolean lastAlarmActive;
+
 void printStates() {
-  Serial.print("Is the fan running: ");
-  Serial.println(fanRunning);
+  if (lastFanRunning != fanRunning) {
+    Serial.print("Is the fan running: ");
+    Serial.println(fanRunning);
+  }
 
-  Serial.print("Is the door open: ");
-  Serial.println(isOpen);
+  if (lastIsOpen != isOpen) {
+    Serial.print("Is the door open: ");
+    Serial.println(isOpen);
+  }
 
-  Serial.print("Is the alarm active: ");
-  Serial.println(alarmActive);
+  if (lastAlarmActive != alarmActive) {
+    Serial.print("Is the alarm active: ");
+    Serial.println(alarmActive);
+  }
+
+  lastFanRunning = fanRunning;
+  lastIsOpen = isOpen;
+  lastAlarmActive = alarmActive;
 }
 
 void setup() {

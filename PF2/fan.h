@@ -35,7 +35,7 @@ void stopFan() {
 void handleFan() {
   if (readTemp() > 30.00 && !fanRunning) {
     runFan();
-  } else {
+  } else if (readTemp() < 30.00 && fanRunning){
     stopFan();
   }
 }
