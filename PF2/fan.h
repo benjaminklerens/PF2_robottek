@@ -4,7 +4,7 @@ int ThermistorPin = A0;
 int Vo;
 float R1 = 10000;
 float logR2, R2, T, Tc, Tf;
-float c1 = 1.009249522e-03, c2 = 2.378405444e-04, c3 = 2.019202697e-07;
+float c1 = 0.001125308852122, c2 = 0.000234711863267, c3 = 0.000000085663516;
 
 boolean fanRunning = false;
 
