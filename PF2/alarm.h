@@ -176,7 +176,6 @@ void setupAlarm() {
 }
 
 void handleAlarm() {
-  //runAlarm();
 
   // Fetch new time info from RTC
   now = rtc.now();

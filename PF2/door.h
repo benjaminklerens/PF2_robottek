@@ -8,8 +8,6 @@ int PIRPin = A3;
 boolean isOpen = false;
 unsigned long previousTime;
 
-int pos = 180;
-int speed = 1; // Degrees of each movement, i.e. speed of door
 
 int sensMvmt;
 int noiseThreshold = 100; // Threshold for recognizing PIR trigger

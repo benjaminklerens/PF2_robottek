@@ -2,6 +2,17 @@
 #include "door.h"
 #include "alarm.h"
 
+void printStates() {
+  Serial.print("Is the fan running: ");
+  Serial.println(fanRunning);
+
+  Serial.print("Is the door open: ");
+  Serial.println(isOpen);
+
+  Serial.print("Is the alarm active: ");
+  Serial.println(alarmActive);
+}
+
 void setup() {
   Serial.begin(9600);
   Serial.println("smart home booting");
@@ -12,7 +23,7 @@ void setup() {
 }
 
 void loop() {
-  //runFan();
+  printStates();
   handleFan();
   handleDoor();
   handleAlarm();
