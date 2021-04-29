@@ -1,6 +1,6 @@
 #define MOTOR_PIN 13
 
-int ThermistorPin = 0;
+int ThermistorPin = A0;
 int Vo;
 float R1 = 10000;
 float logR2, R2, T, Tc, Tf;
